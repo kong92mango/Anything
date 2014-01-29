@@ -1,0 +1,9 @@
+{ "Info" "0" "" "qar.tcl version #1" {  } {  } 0 0 "qar.tcl version #1" 0 0 "" 0 0 1390959591848 ""}
+{ "Info" "0" "" "Including '-use_file_set basic' by default" {  } {  } 0 0 "Including '-use_file_set basic' by default" 0 0 "" 0 0 1390959592750 ""}
+{ "Info" "0" "" "Initializing files for 'vga_exercise' revision" {  } {  } 0 0 "Initializing files for 'vga_exercise' revision" 0 0 "" 0 0 1390959593004 ""}
+{ "Info" "0" "" "File Set 'Source control' contains:" { { "Info" "0" "" "Project source and settings files" {  } {  } 0 0 "Project source and settings files" 0 0 "" 0 0 1390959593132 ""} { "Info" "0" "" "Automatically detected source files" {  } {  } 0 0 "Automatically detected source files" 0 0 "" 0 0 1390959593132 ""}  } {  } 0 0 "File Set 'Source control' contains:" 0 0 "" 0 0 1390959593132 ""}
+{ "Info" "0" "" "----------------------------------------------------------" {  } {  } 0 0 "----------------------------------------------------------" 0 0 "" 0 0 1390959594870 ""}
+{ "Info" "0" "" "----------------------------------------------------------" {  } {  } 0 0 "----------------------------------------------------------" 0 0 "" 0 0 1390959594871 ""}
+{ "Info" "0" "" "Generated archive 'vga_exercise_tmp_archive.qar'" {  } {  } 0 0 "Generated archive 'vga_exercise_tmp_archive.qar'" 0 0 "" 0 0 1390959594871 ""}
+{ "Info" "0" "" "----------------------------------------------------------" {  } {  } 0 0 "----------------------------------------------------------" 0 0 "" 0 0 1390959594871 ""}
+{ "Info" "0" "" "----------------------------------------------------------" {  } {  } 0 0 "----------------------------------------------------------" 0 0 "" 0 0 1390959594871 ""}
