@@ -436,7 +436,7 @@ void initKeyboard() {
 
 }
 
-/* Code copied from Zoe on Github */
+/* Reads keyboard input, returns scancode */
 
 alt_u8 getKeyboard(){
 	alt_u8 data;
