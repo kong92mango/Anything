@@ -1,4 +1,3 @@
-
 /***************************************** Project: Falling fruits *****************************************/
 
 // All includes, macros, function prototypes, struct typedefs, global variables are declared
@@ -66,24 +65,19 @@ int main(void) {
 	enum game_state gState = welcome; // Initialize game state to "Welcome"
 	unsigned char keys;
 	ticks_per_s = alt_ticks_per_second();
-	printf("initial timer tick record\n");
-	ticks_start = alt_nticks();
+//	printf("initial timer tick record\n");
+
 	//printf("frequency = %d\n", ticks_per_s);
 	//printf("started time: %d\n",ticks_start);
 
 	while(1) {
-		//break;
+	
 		DrawBackground( pixel_buffer );
 		if(gState == welcome ) {
 			catched = 0;
 			key_count = 0;
 			while(1) {
-//				if(sm_counter > 400000000){
-//					sm_counter = 0;
-//					counter++;
-//				}
 
-				break;
 				alt_u8 data = getKeyboard();
 				keys = IORD(KEYS_BASE, 0); // Read push keys from DE2 - IORD prevents processor reading from cache
 
@@ -132,14 +126,14 @@ int main(void) {
 						break;
 				}
 
-				if (!(0x1 & keys) ){//||(data == KEYBOARD_ONE && decode == KB_BREAK_CODE )) { // Right key to choose level
-					printf("DOWN, %d \n",key_count);
+				if (!(0x1 & keys) ||(data == KEYBOARD_DOWN && decode == KB_BREAK_CODE )) { // Down key to choose level
+					//printf("DOWN, %d \n",key_count);
 					key_count++;
 					key_count%=4;
 					usleep(250000);
 				}
-				if (!(0x2 & keys) || (data == KEYBOARD_ENTER && decode ==KB_BINARY_MAKE_CODE )) { //Left push key or ENTER to select
-					printf("ENTER\n");
+				if (!(0x2 & keys) || (data == KEYBOARD_ENTER && decode ==KB_BINARY_MAKE_CODE )) { // ENTER to select
+					//printf("ENTER\n");
 					break;
 				}
 			}
@@ -158,6 +152,8 @@ int main(void) {
 		/************************************ Initialize Fruit structs ****************************************/
 		InitBmpFruit(num_fruits);
 
+		/************************************ Initialize Timer *********************************************/
+		ticks_start = alt_nticks();
 		/************************************ Action Starts Here ****************************************/
 		while(1) {
 			ticks_now = alt_nticks();
@@ -166,8 +162,9 @@ int main(void) {
 			//printf("%d\n", ticks_now);
 			timeleft = GAME_LENGTH - elapsed_time;
 			if(timeleft==0){
-				printf("\nreally over");
+				//printf("\nreally over");
 				timeleft = GAME_LENGTH;
+				gState = welcome;
 				break;
 			}
 			alt_u8 data = getKeyboard();
