@@ -241,6 +241,7 @@ void shuffleAvailableXcoords() {
 	}
 }
 
+/* Intended to resolve overlapping fruits. Not used */
 void swapXCoordWithAvailable(int fruit_index) {
 	int randAvailIndex, temp;
 	randAvailIndex = rand()%(20-num_fruits)+ num_fruits; // Array of 20 [first num_fruit indices will be taken ... ]
