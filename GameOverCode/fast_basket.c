@@ -1,29 +1,34 @@
+
 /***************************************** Project: Falling fruits *****************************************/
 
 // All includes, macros, function prototypes, struct typedefs, global variables are declared
 // in this header file
 #include "fast_basket.h"
-#define GAME_LENGTH 30
+
 int main(void) {
 
 	catched =0;
+	// 1 = apple, 2 = banana, 3 = cherry, 4 = lemon, 5 = orange, 6 = peach, 7 = pear, 8 = strawberry
+	catch1 =0;
+	catch2 =0;
+	catch3 =0;
+	catch4 =0;
+	catch5 =0;
+	catch6 =0;
+	catch7 =0;
+	catch8 =0;
+	
+	
 	int key_count=0; //for welcome screen
-	unsigned int counter =0;
-	int timeleft = GAME_LENGTH;
-	int ticks_per_s;
-	int ticks_start;
-	int ticks_now;
-	int elapsed_time;
-	//unsigned int sm_counter = 0;
 
-	srand ((int)time(NULL)); // Seed the random function
+	srand (time(NULL)); // Seed the random function
 
 	/************************************** Initialize Character Buffer *****************************************/
 
 	alt_up_char_buffer_dev *char_buffer;
 	char_buffer = alt_up_char_buffer_open_dev("/dev/video_character_buffer_with_dma_0");
 	if ( char_buffer == NULL)
-		alt_printf("Error: could not open char buffer\n");
+		alt_printf ("Error: could not open char buffer\n");
 	else
 		alt_printf ("Opened char buffer\n");
 	alt_up_char_buffer_init(char_buffer);
@@ -61,23 +66,43 @@ int main(void) {
 
 	/************************************** Initialize Game State to Welcome Screen****************************/
 
-	initKeyboard();
+
 	enum game_state gState = welcome; // Initialize game state to "Welcome"
 	unsigned char keys;
-	ticks_per_s = alt_ticks_per_second();
-//	printf("initial timer tick record\n");
 
-	//printf("frequency = %d\n", ticks_per_s);
-	//printf("started time: %d\n",ticks_start);
-
+	if(gState == over ){
 	while(1) {
+			DrawGameOver( pixel_buffer );
+			alt_u8 data = getKeyboard();
+			keys = IORD(KEYS_BASE, 0);
+
+			char catchedtype_char[20];
+			sprintf(catchedtype, "You Caught %d Apples, %d Bananas, %d Cheeries, %d Lemons, %d Oranges, %d Peaches, %d Pears and %d Strawberries!!",
+			catch1, catch2, catch3, catch4, catch5, catch6, catch7, catch8);
+			alt_up_char_buffer_string(char_buffer, catchedtype_char, 5, 10);
+
+	//points: 1 = apple, 2 = banana, 4 = cherry, 5 = lemon, 5 = orange, 8 = peach, 10 = pear, 20 = strawberry
+
+			char finalscore_char[20];
+			sprintf(finalscore, "Your final score is: %d Apples * 1 point + %d Bananas * 2 points + %d Cheeries * 4 points + %d Lemons * 5 points + %d Oranges * 5 points +
+			%d Peaches * 8 points + %d Pears * 10 points + %d Strawberries * 20 points = %d !!!!",
+			catch1, catch2, catch3, catch4, catch5, catch6, catch7, catch8, catched);
+			alt_up_char_buffer_string(char_buffer, finalscore_char, 5, 20);
 	
+			alt_up_char_buffer_string(char_buffer, "Press Enter or Key 1 to Return to Menu", CHAR_BUF_WIDTH/2 - 5, CHAR_BUF_HEIGHT/2 - 13);
+			
+			if (!(0x2 & keys) || (data == KEYBOARD_ENTER && decode ==KB_BINARY_MAKE_CODE )) { //Left push key or ENTER to select
+				printf("ENTER");
+				break;
+			}
+	}		
+	}		
+	
+	
+	while(1) {
 		DrawBackground( pixel_buffer );
 		if(gState == welcome ) {
-			catched = 0;
-			key_count = 0;
 			while(1) {
-
 				alt_u8 data = getKeyboard();
 				keys = IORD(KEYS_BASE, 0); // Read push keys from DE2 - IORD prevents processor reading from cache
 
@@ -125,19 +150,17 @@ int main(void) {
 						alt_up_pixel_buffer_dma_draw_rectangle(pixel_buffer, 58, 211, 62, 215, 0x05FF, 0);
 						break;
 				}
-
-				if (!(0x1 & keys) ||(data == KEYBOARD_DOWN && decode == KB_BREAK_CODE )) { // Down key to choose level
-					//printf("DOWN, %d \n",key_count);
+				if (!(0x1 & keys) || (data == KEYBOARD_DOWN && decode == KB_LONG_BINARY_MAKE_CODE )) { // Right key to choose level
+					printf("DOWN, %d \n",key_count);
 					key_count++;
 					key_count%=4;
 					usleep(250000);
 				}
-				if (!(0x2 & keys) || (data == KEYBOARD_ENTER && decode ==KB_BINARY_MAKE_CODE )) { // ENTER to select
-					//printf("ENTER\n");
+				if (!(0x2 & keys) || (data == KEYBOARD_ENTER && decode ==KB_BINARY_MAKE_CODE )) { //Left push key or ENTER to select
+					printf("ENTER");
 					break;
 				}
 			}
-
 		}
 
 		alt_up_pixel_buffer_dma_clear_screen(pixel_buffer, 0);
@@ -152,21 +175,8 @@ int main(void) {
 		/************************************ Initialize Fruit structs ****************************************/
 		InitBmpFruit(num_fruits);
 
-		/************************************ Initialize Timer *********************************************/
-		ticks_start = alt_nticks();
 		/************************************ Action Starts Here ****************************************/
 		while(1) {
-			ticks_now = alt_nticks();
-			elapsed_time = (ticks_now - ticks_start)/ticks_per_s;
-			//printf("started: %d\n", ticks_start);
-			//printf("%d\n", ticks_now);
-			timeleft = GAME_LENGTH - elapsed_time;
-			if(timeleft==0){
-				//printf("\nreally over");
-				timeleft = GAME_LENGTH;
-				gState = welcome;
-				break;
-			}
 			alt_u8 data = getKeyboard();
 			keys = IORD(KEYS_BASE, 0); // IORD prevents processor reading from cache
 			int count_f =0;
@@ -195,12 +205,16 @@ int main(void) {
 				usleep(1500);
 			}
 			char catched_char[20];
-			sprintf(catched_char, "Score: %d  ", catched);
-			alt_up_char_buffer_string(char_buffer, catched_char, 25, 2);
+			sprintf(catched_char, "Score: %d", catched);
+			alt_up_char_buffer_string(char_buffer, catched_char, 5, 2);
 
+
+	
+			
+			
 			char speed_char[20]; // print the speed of the fruit for debugging
-			sprintf(speed_char, "Time Left: %d  ", timeleft);
-			alt_up_char_buffer_string(char_buffer, speed_char, 25, 6);
+			sprintf(speed_char, "Speed: %d", bmp_fruits[0].speed);
+			alt_up_char_buffer_string(char_buffer, speed_char, 50, 2);
 		}
 		alt_up_pixel_buffer_dma_clear_screen(pixel_buffer, 0);
 		alt_up_char_buffer_clear(char_buffer);
@@ -241,7 +255,6 @@ void shuffleAvailableXcoords() {
 	}
 }
 
-/* Intended to resolve overlapping fruits. Not used */
 void swapXCoordWithAvailable(int fruit_index) {
 	int randAvailIndex, temp;
 	randAvailIndex = rand()%(20-num_fruits)+ num_fruits; // Array of 20 [first num_fruit indices will be taken ... ]
@@ -283,8 +296,49 @@ void MoveBmpFruit( int i, alt_up_pixel_buffer_dma_dev* pixel_buffer) {
 
 			//alt_up_pixel_buffer_dma_draw_box(pixel_buffer, fruit_x_Left, 0, fruit_x_Right , bmp_fruits[i].height+16, 0x0000, PIXEL_BUFFER_BASE);
 			RedrawBackground(fruit_x_Left, bmp_fruits[i].height, fruit_x_Right , bmp_fruits[i].height+16, pixel_buffer);
-			GenBmpFruit(i);
+			//points: 1 = apple, 2 = banana, 4 = cherry, 5 = lemon, 5 = orange, 8 = peach, 10 = pear, 20 = strawberry
+			if(bmp_fruits[i].type == 1)
+			{
+			catch1++;
 			catched++;
+			}
+			if(bmp_fruits[i].type == 2)
+			{
+			catch2++;
+			catched = catched + 2;
+			}
+			if(bmp_fruits[i].type == 3)
+			{
+			catch3++;
+			catched = catched + 4;
+			}			
+			if(bmp_fruits[i].type == 4)
+			{
+			catch4++;
+			catched = catched + 5;
+			}
+			if(bmp_fruits[i].type == 5)
+			{
+			catch5++;
+			catched = catched + 5;
+			}
+			if(bmp_fruits[i].type == 6)
+			{
+			catch6++;
+			catched = catched + 8;
+			}			
+			if(bmp_fruits[i].type == 6)
+			{
+			catch7++;
+			catched = catched + 10;
+			}			
+			if(bmp_fruits[i].type == 8)
+			{
+			catch8++;
+			catched = catched + 20;
+			}			
+			GenBmpFruit(i);
+			//catched++;
 		} else {
 			if( bmp_fruits[i].sc == max_speed - bmp_fruits[i].speed) {
 				//alt_up_pixel_buffer_dma_draw_hline(pixel_buffer, 16*bmp_fruits[i].x_coord, 16*bmp_fruits[i].x_coord+16, bmp_fruits[i].height, 0x0000, 0);
@@ -421,27 +475,26 @@ void RedrawBackground(int x0, int y0, int x1, int y1, alt_up_pixel_buffer_dma_de
 		}
 }
 
-void initKeyboard() {
-	ps2 = alt_up_ps2_open_dev("/dev/ps2_0");
-	if(ps2 == NULL)
-		printf("Error initializing PS2");
-	else
-		printf("PS2 connected\n");
-
-	alt_up_ps2_init(ps2); //initialize device
-
-	alt_up_ps2_clear_fifo(ps2); //clear buffer
-
-	reset_keyboard(ps2);
-	set_keyboard_rate(ps2, 0x00);
-
-}
-
-/* Reads keyboard input, returns scancode */
+/* Code copied from Zoe on Github */
 
 alt_u8 getKeyboard(){
 	alt_u8 data;
 
+	if (keyboard_init == 1){
+		ps2 = alt_up_ps2_open_dev("/dev/ps2_0");
+		if(ps2 == NULL)
+			printf("Error initializing PS2");
+		else
+			printf("PS2 connected");
+
+		alt_up_ps2_init(ps2); //initialize device
+
+		alt_up_ps2_clear_fifo(ps2); //clear buffer
+
+		reset_keyboard(ps2);
+		set_keyboard_rate(ps2, 0x00);
+		keyboard_init = 0; //initialize device once per reset
+	}
 	decode_scancode(ps2, &decode, &data, &ascii);
 
 	return data;
